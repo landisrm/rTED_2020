@@ -1,0 +1,95 @@
+---
+title: "RMarkdown: a hub for sharing analysis"
+author: "Matt Landis"
+date: "10/26/2020"
+
+output: 
+  ioslides_presentation:
+    incremental: false
+    widescreen: true
+    highlight: pygments
+    css: rsg.css
+    footer: "rTed 4 Nov 2020"
+    keep_md: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment='')
+knitr::knit_engines$set('markdown')
+
+```
+
+
+## Introduction
+
+- Distillation of some lessons I learned recently, trying to create an interactive data visualization tool for household travel surveys
+- I have a lot of experience with static graphics, and taught a data visualization course at Middlebury College for years.
+- I've always been very curious about interactive graphics but have not taken the time to learn Javascript
+- Curious to take advantage of tools that leverage things I already know about
+- Share with you some of the lessons learned, pros and cons of different tools
+- Ability to effectively share data both internally and externally is a core skill
+- How can we do it most efficiently?    
+
+## Outline
+
+- R + Markdown = RMarkdown
+- flexdashboard
+- crosstalk
+- Shiny
+
+# R + Markdown = RMarkdown
+
+## R
+
+## Markdown
+
+This is **Markdown**, a lightweight markup language.  I like it because:
+
+  - It is very readable
+  - You can use it in [Teams](https://support.microsoft.com/en-ie/office/use-markdown-formatting-in-teams-4d10bd65-55e2-4b2d-a1f3-2bebdcd2c772)
+  - code is easy to distinguish: `foo`, `bar`, `baz`.
+
+```{markdown, eval=FALSE, echo=TRUE}
+
+This is **Markdown**, a lightweight markup language.  I like it because:
+
+  - It is very readable in plain text
+  - You can use it in [Teams](https://support.microsoft.com/en-ie/office/use-markdown-formatting-in-teams-4d10bd65-55e2-4b2d-a1f3-2bebdcd2c772)
+  - code is easy to distinguish: `foo`, `bar`, `baz`.
+
+```
+
+FIXME: Add example
+
+## RMarkdown
+
+  - Combines plain text of Markdown with R code
+  - Compiling replaces R code with output of R - figures, tables, text
+  - Can export to HTML, PDF, Word
+  - Results can use RSG branding, like this slideshow (written in RMarkdown and exported to HTML)
+  - Do we have RSG CSS?
+
+FIXME: Add example
+
+# flexdashboard
+
+## flexdashboard
+
+# crosstalk
+
+## crosstalk
+
+  - Interactivity through shared data object
+  - Very simple to set up
+  - All client side.  No server
+  - Limitations
+    - Dataset has to be relatively small
+    - Not all graphics are supported (e.g. histograms)
+    - Leaflet is not well supported - have to use Plotly
+
+# shiny
+
+## shiny
+
+
+# HTS Example combining best of each
