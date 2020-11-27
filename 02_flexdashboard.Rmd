@@ -1,93 +1,74 @@
 ---
-title: "Flexdashboard demo -- Viridis colors"
+title: "Fiji Earthquakes"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
-    vertical_layout: fill
     source_code: embed
-editor_options: 
-  chunk_output_type: console
+    vertical_layout: fill
 ---
 
 ```{r setup, include=FALSE}
-library(flexdashboard)
-library(ggplot2)
-library(viridis)
 
-volcano_df = data.frame(
-  x = rep(10*(1:nrow(volcano)), each=ncol(volcano)),
-  y = rep(10*(1:ncol(volcano)), times=nrow(volcano)),
-  z = as.vector(t(volcano)))
+# Load packages ----------------------------------------------------------------
 
-plot_volcano = function(option){
-  
-  pal_name = switch(
-    option,
-    A = 'magma',
-    B = 'inferno',
-    C = 'plasma',
-    D = 'viridis',
-    E = 'cividis')
-  
-  ggplot(volcano_df, aes(x, y, fill=z)) +
-    geom_tile() +
-    scale_fill_viridis(
-      option=option,
-      name = '',
-      guide=guide_colorbar(
-        barwidth=grid::unit(0.06, units='npc'),
-        barheight=grid::unit(0.6, units='npc'))) +
-    coord_equal() +
-    labs(title = paste('Option', option)) +
-    theme(
-      axis.line=element_blank(),
-      axis.text=element_blank(),
-      axis.title=element_blank(),
-      axis.ticks=element_blank(),
-      panel.background=element_blank())
+library(leaflet)
+library(DT)
+
+# Define some functions -------------------------------------------------------
+
+pal = colorNumeric('Reds', domain=c(min(quakes$mag), max(quakes$mag)))
+
+rad_scale = function(mag){
+  sizemin = 5
+  sizemax = 15
+  sizerange = sizemax - sizemin
+  datarange = max(quakes$mag) - min(quakes$mag)
+  scale = sizerange / datarange
+  radius = (mag - min(quakes$mag)) * scale
+  return(radius)
 }
 
+
+# Create data -----------------------------------------------------------------
+
+data(quakes)
+
 ```
 
-Column {data-width=650}
+
+Column {data-width=500}
 -----------------------------------------------------------------------
 
-### The REAL Maungawhau
+### Quakes dataset
 
-![https://earth.google.com/web/](images/maungawhau_google_earth.png)
+```{r}
 
+leaflet(quakes) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    stroke=FALSE,
+    fillOpacity=0.6,
+    color=~pal(mag),
+    radius=~rad_scale(mag))
 
-Column {data-width=250}
+```
+
+Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Viridis palette
+### Quakes dataset
 
 ```{r}
-plot_volcano(option='D')
-  
+datatable(
+  data=quakes,
+  extensions="Scroller",
+  style="bootstrap",
+  class="compact",
+  width="100%",
+  options=list(
+    deferRender=TRUE,
+    scrollY=300,
+    scroller=TRUE)
+  )
 ```
-
-
-### Magma palette
-
-```{r}
-plot_volcano(option='A')
-```
-
-
-Column {data-width=250}
-------------------------------------------------------------------------
-
-### Inferno palette
-
-```{r}
-plot_volcano(option='B')
-```
-
-### Plasma palette
-
-```{r}
-plot_volcano(option='C')
-```
-
 
