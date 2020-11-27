@@ -1,0 +1,65 @@
+---
+title: Fiji earthquakes
+output: html_document
+---
+
+```{r, echo=FALSE}
+library(crosstalk)
+library(leaflet)
+library(DT)
+
+# Define scales for map
+pal = colorNumeric('Reds', domain=c(min(quakes$mag), max(quakes$mag)))
+
+rad_scale = function(mag){
+  sizemin = 5
+  sizemax = 15
+  sizerange = sizemax - sizemin
+  datarange = max(quakes$mag) - min(quakes$mag)
+  scale = sizerange / datarange
+  radius = (mag - min(quakes$mag)) * scale
+  return(radius)
+}
+
+# Get built-in dataset and sample it
+data(quakes)
+
+# Wrap data frame in SharedData ------------------------------------------------
+
+sd = SharedData$new(quakes)
+
+# Create a filter input
+filter_slider(
+  id="mag", 
+  label="Magnitude", 
+  sharedData=sd,
+  column=~mag,
+  step=0.1,
+  width=250)
+
+
+# Use SharedData like a dataframe with Crosstalk-enabled widgets--------------
+
+bscols(
+  
+leaflet(data=sd) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    stroke=FALSE,
+    fillOpacity=0.6,
+    color=~pal(mag),
+    radius=~rad_scale(mag)),
+  
+  datatable(
+    data=sd,
+    extensions="Scroller",
+    style="bootstrap",
+    class="compact",
+    width="100%",
+    options=list(
+      deferRender=TRUE,
+      scrollY=300,
+      scroller=TRUE)
+    )
+)
+```

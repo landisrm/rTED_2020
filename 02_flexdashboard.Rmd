@@ -1,0 +1,93 @@
+---
+title: "Flexdashboard demo -- Viridis colors"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(ggplot2)
+library(viridis)
+
+volcano_df = data.frame(
+  x = rep(10*(1:nrow(volcano)), each=ncol(volcano)),
+  y = rep(10*(1:ncol(volcano)), times=nrow(volcano)),
+  z = as.vector(t(volcano)))
+
+plot_volcano = function(option){
+  
+  pal_name = switch(
+    option,
+    A = 'magma',
+    B = 'inferno',
+    C = 'plasma',
+    D = 'viridis',
+    E = 'cividis')
+  
+  ggplot(volcano_df, aes(x, y, fill=z)) +
+    geom_tile() +
+    scale_fill_viridis(
+      option=option,
+      name = '',
+      guide=guide_colorbar(
+        barwidth=grid::unit(0.06, units='npc'),
+        barheight=grid::unit(0.6, units='npc'))) +
+    coord_equal() +
+    labs(title = paste('Option', option)) +
+    theme(
+      axis.line=element_blank(),
+      axis.text=element_blank(),
+      axis.title=element_blank(),
+      axis.ticks=element_blank(),
+      panel.background=element_blank())
+}
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### The REAL Maungawhau
+
+![https://earth.google.com/web/](images/maungawhau_google_earth.png)
+
+
+Column {data-width=250}
+-----------------------------------------------------------------------
+
+### Viridis palette
+
+```{r}
+plot_volcano(option='D')
+  
+```
+
+
+### Magma palette
+
+```{r}
+plot_volcano(option='A')
+```
+
+
+Column {data-width=250}
+------------------------------------------------------------------------
+
+### Inferno palette
+
+```{r}
+plot_volcano(option='B')
+```
+
+### Plasma palette
+
+```{r}
+plot_volcano(option='C')
+```
+
+

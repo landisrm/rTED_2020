@@ -1,18 +1,18 @@
 .gdbar img {
-  width: 193px !important;
-  height: 73px !important;
+  width: 193px;
+  height: 73px;
 }
 
 slides > slide {
   display: none;
   font-family: 'Open Sans', Arial, sans-serif;
   font-size: 26px;
-  color: #797979;
-  width: 900px;
+  color: #FFFFFF;
+  width: 1250px;
   height: 700px;
   margin-left: -450px;
   margin-top: -350px;
-  padding: 40px 60px;
+  padding: 60px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
@@ -22,9 +22,14 @@ slides > slide {
   -moz-transition: all 0.6s ease-in-out;
   -o-transition: all 0.6s ease-in-out;
   transition: all 0.6s ease-in-out;
-
-  background-image: url(http://rsginc.com/wp-content/uploads/2016/09/RSG_logo.png) !important;
-  background-size: 100px !important;
-  background-repeat: no-repeat !important;
-  background-position: 4.1% 95% !important;
+  background-image: url('images/rsg_background_dark.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+/*
+  background-image: url(http://rsginc.com/wp-content/uploads/2016/09/RSG_logo.png);
+  background-size: 100px;
+  background-repeat: no-repeat;
+  background-position: 6% 95%;
+*/
 }
+

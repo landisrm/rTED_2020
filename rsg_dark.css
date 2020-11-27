@@ -1,0 +1,41 @@
+.gdbar img {
+  width: 193px;
+  height: 73px;
+}
+
+slides > slide {
+  display: none;
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 26px;
+  color: #DCDDDE;
+  width: 1200px;
+  height: 600px;
+  margin-left: -450px;
+  margin-top: -350px;
+  padding: 60px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-transition: all 0.6s ease-in-out;
+  -moz-transition: all 0.6s ease-in-out;
+  -o-transition: all 0.6s ease-in-out;
+  transition: all 0.6s ease-in-out;
+  background-image: url('images/rsg_background_dark.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-color: #77787B;
+/*
+  background-image: url(http://rsginc.com/wp-content/uploads/2016/09/RSG_logo.png);
+  background-size: 100px;
+  background-repeat: no-repeat;
+  background-position: 6% 95%;
+*/
+}
+
+/*
+slides > .backdrop {
+  background-color: #77787B;
+}
+*/

@@ -1,0 +1,86 @@
+---
+title: "Fiji Earthquakes using Shiny"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    source_code: embed
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+
+library(leaflet)
+library(DT)
+
+pal = colorNumeric('Reds', domain=c(min(quakes$mag), max(quakes$mag)))
+
+rad_scale = function(mag){
+  sizemin = 5
+  sizemax = 15
+  sizerange = sizemax - sizemin
+  datarange = max(quakes$mag) - min(quakes$mag)
+  scale = sizerange / datarange
+  radius = (mag - min(quakes$mag)) * scale
+  return(radius)
+}
+
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+library(datasets)
+data(quakes)
+
+
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+
+```{r}
+
+sliderInput(inputId="bw_adjust", label = "Bandwidth adjustment:",
+            min = 0.1, max = 1, value = 0.5, step = 0.1)
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Quakes dataset
+
+```{r}
+renderLeaflet({
+  
+leaflet(quakes) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    stroke=FALSE,
+    fillOpacity=0.6,
+    color=~pal(mag),
+    radius=~rad_scale(mag))
+
+})
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Quakes dataset
+
+```{r}
+
+renderDataTable({
+  
+datatable(
+  data=quakes,
+  extensions="Scroller",
+  style="bootstrap",
+  class="compact",
+  width="100%",
+  options=list(
+    deferRender=TRUE,
+    scrollY=300,
+    scroller=TRUE)
+  )
+  
+})
+```
+

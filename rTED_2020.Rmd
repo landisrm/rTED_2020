@@ -1,16 +1,17 @@
 ---
 title: "RMarkdown: a hub for sharing analysis"
 author: "Matt Landis"
-date: "10/26/2020"
+date: "2 Dec 2020"
 
 output: 
   ioslides_presentation:
     incremental: false
     widescreen: true
     highlight: pygments
-    css: rsg.css
-    footer: "rTed 4 Nov 2020"
+    css: rsg_dark.css
+    footer: "rTed 2 Dec 2020"
     keep_md: false
+    logo: images/RSG Mark (cmyk).jpg
 ---
 
 ```{r setup, include=FALSE}
@@ -20,15 +21,29 @@ knitr::knit_engines$set('markdown')
 ```
 
 
-## Introduction
+## About me
+
++ Ph.D. from Dartmouth
++ Forest ecology
++ Taught ecology and data visualization at Middlebury College
++ Research Scientist working on environment and international security
++ Joined RSG in 2017
+
+## About this talk
 
 - Distillation of some lessons I learned recently, trying to create an interactive data visualization tool for household travel surveys
 - I have a lot of experience with static graphics, and taught a data visualization course at Middlebury College for years.
 - I've always been very curious about interactive graphics but have not taken the time to learn Javascript
 - Curious to take advantage of tools that leverage things I already know about
+- Really pushing the limits of what can be done with R and Markdown
 - Share with you some of the lessons learned, pros and cons of different tools
 - Ability to effectively share data both internally and externally is a core skill
-- How can we do it most efficiently?    
+- How can we do it most efficiently?  
+
+
+## Examples
+
+http://dataexplorer.psrc.org/household-travel-survey/
 
 ## Outline
 
@@ -36,28 +51,34 @@ knitr::knit_engines$set('markdown')
 - flexdashboard
 - crosstalk
 - Shiny
+- An HTS example
+
 
 # R + Markdown = RMarkdown
 
 ## R
 
+  - If you work with data, you probably already know a lot about R
+  - if you don't, it's one of the main computer languages we use here at RSG
+  - Extremely versatile language for data analysis
+  - One of the most widely used data languages in the world, along with SQL and Python
+  
+  - Based heavily on S, a statistical computer language developed at Bell Labs in the 1970's
+  - Excellent data visualization facilities built in
+  
+
 ## Markdown
 
-This is **Markdown**, a lightweight markup language.  I like it because:
+This is **Markdown**, a lightweight markup language. You use it to format text.
 
-  - It is very readable
-  - You can use it in [Teams](https://support.microsoft.com/en-ie/office/use-markdown-formatting-in-teams-4d10bd65-55e2-4b2d-a1f3-2bebdcd2c772)
+I like it because:
+
+  - It is very readable even in plain text
   - code is easy to distinguish: `foo`, `bar`, `baz`.
+  - It's versatile!  Use in  [Teams](https://support.microsoft.com/en-ie/office/use-markdown-formatting-in-teams-4d10bd65-55e2-4b2d-a1f3-2bebdcd2c772) and [Github](https://guides.github.com/features/mastering-markdown/), not to mention [RStudio](https://rmarkdown.rstudio.com/).
+  - Create HTML pages, presentations, Word docs, PDF, dashboards, etc.
+  - Learn more at [markdownguide.org](https://www.markdownguide.org/getting-started/) and try it out at [dillinger.io](https://dillinger.io/).
 
-```{markdown, eval=FALSE, echo=TRUE}
-
-This is **Markdown**, a lightweight markup language.  I like it because:
-
-  - It is very readable in plain text
-  - You can use it in [Teams](https://support.microsoft.com/en-ie/office/use-markdown-formatting-in-teams-4d10bd65-55e2-4b2d-a1f3-2bebdcd2c772)
-  - code is easy to distinguish: `foo`, `bar`, `baz`.
-
-```
 
 FIXME: Add example
 
@@ -69,11 +90,23 @@ FIXME: Add example
   - Results can use RSG branding, like this slideshow (written in RMarkdown and exported to HTML)
   - Do we have RSG CSS?
 
-FIXME: Add example
+## Communicating data
+
+  - serves as a notebook
+  - can function as a notebook for developing analyses and methods
+  - For sharing data internally
+  - For sharing data externally
+  
+## Themes
+
+??
 
 # flexdashboard
 
 ## flexdashboard
+
+
+
 
 # crosstalk
 
@@ -84,12 +117,25 @@ FIXME: Add example
   - All client side.  No server
   - Limitations
     - Dataset has to be relatively small
-    - Not all graphics are supported (e.g. histograms)
-    - Leaflet is not well supported - have to use Plotly
+    - Not all graphics are supported (e.g. histograms, lines on maps)
 
 # shiny
 
 ## shiny
 
+## TODO:
+Deploy shinyapp https://github.com/RSGInc/tmrtools/wiki/Using-shinyapps.io-to-share-results
 
 # HTS Example combining best of each
+
+
+# Summary
+
+## Packages demoed
+
+  - rmarkdown
+  - flexdashboard
+  - crosstalk
+  - shiny
+  - leaflet
+  - datatable

@@ -1,0 +1,93 @@
+---
+title: "Fiji Earthquakes using crosstalk"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    source_code: embed
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+
+# Load packages ----------------------------------------------------------------
+
+library(crosstalk)
+library(leaflet)
+library(DT)
+
+# Define some functions -------------------------------------------------------
+
+pal = colorNumeric('Reds', domain=c(min(quakes$mag), max(quakes$mag)))
+
+rad_scale = function(mag){
+  sizemin = 5
+  sizemax = 15
+  sizerange = sizemax - sizemin
+  datarange = max(quakes$mag) - min(quakes$mag)
+  scale = sizerange / datarange
+  radius = (mag - min(quakes$mag)) * scale
+  return(radius)
+}
+
+
+# Create data -----------------------------------------------------------------
+
+# Wrap data frame in SharedData
+sd = SharedData$new(quakes)
+
+
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+Select the magnitude of the earthquake
+
+```{r}
+# Create a filter input
+filter_slider(
+  id="mag", 
+  label="Magnitude", 
+  sharedData=sd,
+  column=~mag,
+  step=0.1,
+  width=250)
+```
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Quakes dataset
+
+```{r}
+
+leaflet(sd) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    stroke=FALSE,
+    fillOpacity=0.6,
+    color=~pal(mag),
+    radius=~rad_scale(mag))
+
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Quakes dataset
+
+```{r}
+datatable(
+  data=sd,
+  extensions="Scroller",
+  style="bootstrap",
+  class="compact",
+  width="100%",
+  options=list(
+    deferRender=TRUE,
+    scrollY=300,
+    scroller=TRUE)
+  )
+```
+
