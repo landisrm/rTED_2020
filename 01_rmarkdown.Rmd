@@ -3,11 +3,38 @@ title: "R Markdown example"
 author: "Matt Landis"
 date: "11/23/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, comment = '')
+devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 library(ggplot2)
+library(maps)
+
+# Load data
+data(quakes)
+# world = map_data('world2')
+# world = world[
+#   world$long > 155 & world$long < 200 &
+#   world$lat < 0 & world$lat > -50, ]
+# 
+# # Create a plot
+# quake_map = ggplot() +
+#   geom_point(
+#     data=quakes,
+#     aes(x=long, y=lat, color=mag),
+#     size=2) +
+#   geom_polygon(
+#     data = world,
+#     aes(x=long, y=lat, group=group),
+#     fill=get_rsg_colors('fog'),
+#     color=get_rsg_colors('storm'),
+#     alpha=0.4) +
+#   scale_color_rsg(palette='hot', interpolate=TRUE) +
+#   coord_equal() +
+#   theme_bw()
 ```
 
 ## R Markdown
@@ -22,10 +49,12 @@ head(quakes)
 
 ## Including Plots
 
-You can also embed plots, for example:
+You can also embed plots, for example, here is a map of earthquakes near Fiji.
 
 ```{r xyplot}
-ggplot(quakes, aes(x=mag, y=stations)) +
-  geom_point() +
-  geom_smooth()
+ggplot(quakes, aes(x=long, y=lat, color=mag)) +
+  geom_point(size=2) +
+  coord_equal() +
+  scale_color_rsg(palette='hot', interpolate=TRUE) +
+  theme_bw()
 ```
