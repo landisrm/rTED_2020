@@ -11,13 +11,17 @@ output:
 
 # Load packages ----------------------------------------------------------------
 
+devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
+
 library(crosstalk)
 library(leaflet)
 library(DT)
 
 # Define some functions -------------------------------------------------------
 
-pal = colorNumeric('Reds', domain=c(min(quakes$mag), max(quakes$mag)))
+# Define scales for map
+pal = colorNumeric(get_rsg_palette('hot'),
+  domain=c(min(quakes$mag), max(quakes$mag)))
 
 rad_scale = function(mag){
   sizemin = 5
@@ -31,10 +35,10 @@ rad_scale = function(mag){
 
 
 # Create data -----------------------------------------------------------------
+data(quakes)
 
 # Wrap data frame in SharedData
 sd = SharedData$new(quakes)
-
 
 ```
 
@@ -64,11 +68,8 @@ Column {data-width=500}
 
 leaflet(sd) %>%
   addTiles() %>%
-  addCircleMarkers(
-    stroke=FALSE,
-    fillOpacity=0.6,
-    color=~pal(mag),
-    radius=~rad_scale(mag))
+  addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
+  addLegend(pal=pal, values=~mag, opacity=0.8)
 
 ```
 
@@ -80,14 +81,17 @@ Column {data-width=500}
 ```{r}
 datatable(
   data=sd,
+  rownames=FALSE,
   extensions="Scroller",
   style="bootstrap",
-  class="compact",
+  class=c("compact", "display"),
   width="100%",
   options=list(
     deferRender=TRUE,
     scrollY=300,
-    scroller=TRUE)
-  )
+    scroller=TRUE,
+    searching=FALSE)
+)
+
 ```
 

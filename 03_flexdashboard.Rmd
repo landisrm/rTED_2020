@@ -67,12 +67,14 @@ datatable(
   data=quakes,
   extensions="Scroller",
   style="bootstrap",
-  class="compact",
+  class=c("display", "compact"),
+  rownames=FALSE,
   width="100%",
-  options=list(
-    deferRender=TRUE,
-    scrollY=300,
-    scroller=TRUE)
+   options=list(
+     deferRender=TRUE,
+     scrollY=300,
+     scroller=TRUE,
+     searching=FALSE)
   )
 ```
 

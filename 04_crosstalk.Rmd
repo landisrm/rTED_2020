@@ -5,16 +5,15 @@ output: html_document
 
 ```{r, echo=FALSE, include=FALSE}
 
-#  devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
-
+devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 
 library(crosstalk)
 library(leaflet)
 library(DT)
 
-# # Define scales for map
-# pal = colorNumeric(get_rsg_palette('hot'),
-#   domain=c(min(quakes$mag), max(quakes$mag)))
+# Define scales for map
+pal = colorNumeric(get_rsg_palette('hot'),
+  domain=c(min(quakes$mag), max(quakes$mag)))
 
 rad_scale = function(mag){
   sizemin = 5
@@ -33,6 +32,9 @@ data(quakes)
 
 sd = SharedData$new(quakes)
 
+```
+
+```{r, echo=FALSE}
 # Create a filter input
 filter_slider(
   id="mag", 
@@ -45,25 +47,25 @@ filter_slider(
 
 # Use SharedData like a dataframe with Crosstalk-enabled widgets--------------
 
-# bscols(
+bscols(
 
-leaflet(quakes) %>%
+leaflet(sd) %>%
   addTiles() %>%
-  addMarkers()
-  
-  # addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
-  # addLegend(pal=pal, values=~mag, opacity=0.8),
+  addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
+  addLegend(pal=pal, values=~mag, opacity=0.8),
 
   datatable(
     data=sd,
+    rownames=FALSE,
     extensions="Scroller",
     style="bootstrap",
-    class="compact",
+    class=c("compact", "display"),
     width="100%",
     options=list(
       deferRender=TRUE,
       scrollY=300,
-      scroller=TRUE)
+      scroller=TRUE,
+      searching=FALSE)
     )
-# )
+)
 ```

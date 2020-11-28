@@ -28,7 +28,7 @@ data(quakes)
 
 ```
 
-## Interactive tables
+## Interactive tables with DT
 
 We can make interactive tables of data very simply, using the [DT](https://rstudio.github.io/DT/) package, which is an R interface to the JavaScript library [DataTables](https://datatables.net/).
 
@@ -36,7 +36,7 @@ We can make interactive tables of data very simply, using the [DT](https://rstud
 datatable(quakes)
 ```
 
-## Interactive maps
+## Interactive maps with leaflet
 
 Making interactive maps is also pretty simple using the [leaflet]() package, which wraps the JavaScript library [Leaflet](https://leafletjs.com/).
 
