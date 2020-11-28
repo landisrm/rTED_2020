@@ -1,5 +1,5 @@
 ---
-title: "R Markdown example"
+title: "Easy interactivity"
 author: "Matt Landis"
 date: "11/23/2020"
 output: html_document
@@ -19,8 +19,8 @@ devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/
 
 # Load libraries 
 
-library(ggplot2)
-
+library(DT)
+library(leaflet)
 
 # Load data
 
@@ -35,7 +35,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r quakes}
-head(quakes, 20)
+datatable(quakes)
 ```
 
 ## Including Plots
@@ -43,9 +43,7 @@ head(quakes, 20)
 You can also embed plots, for example, here is a map of earthquakes near Fiji.
 
 ```{r xyplot}
-ggplot(quakes, aes(x=long, y=lat, color=mag)) +
-  geom_point(size=2) +
-  coord_equal() +
-  scale_color_rsg(palette='hot', interpolate=TRUE) +
-  theme_bw()
+leaflet(quakes) %>%
+  addTiles() %>%
+  addCircleMarkers(lng=~long, lat=~lat)
 ```

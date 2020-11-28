@@ -3,13 +3,18 @@ title: Fiji earthquakes
 output: html_document
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
+
+#  devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
+
+
 library(crosstalk)
 library(leaflet)
 library(DT)
 
-# Define scales for map
-pal = colorNumeric('Reds', domain=c(min(quakes$mag), max(quakes$mag)))
+# # Define scales for map
+# pal = colorNumeric(get_rsg_palette('hot'),
+#   domain=c(min(quakes$mag), max(quakes$mag)))
 
 rad_scale = function(mag){
   sizemin = 5
@@ -40,16 +45,15 @@ filter_slider(
 
 # Use SharedData like a dataframe with Crosstalk-enabled widgets--------------
 
-bscols(
-  
-leaflet(data=sd) %>%
+# bscols(
+
+leaflet(quakes) %>%
   addTiles() %>%
-  addCircleMarkers(
-    stroke=FALSE,
-    fillOpacity=0.6,
-    color=~pal(mag),
-    radius=~rad_scale(mag)),
+  addMarkers()
   
+  # addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
+  # addLegend(pal=pal, values=~mag, opacity=0.8),
+
   datatable(
     data=sd,
     extensions="Scroller",
@@ -61,5 +65,5 @@ leaflet(data=sd) %>%
       scrollY=300,
       scroller=TRUE)
     )
-)
+# )
 ```

@@ -1,0 +1,49 @@
+---
+title: "Easy interactivity"
+author: "Matt Landis"
+date: "11/23/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+
+# Set options
+knitr::opts_chunk$set(echo = TRUE, comment = '')
+
+# Load development version of tmrtools
+
+devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
+
+
+# Load libraries 
+
+library(DT)
+library(leaflet)
+
+# Load data
+
+data(quakes)
+
+```
+
+## Interactive tables
+
+We can make interactive tables of data very simply, using the [DT](https://rstudio.github.io/DT/) package, which is an R interface to the JavaScript library [DataTables](https://datatables.net/).
+
+```{r quakes}
+datatable(quakes)
+```
+
+## Interactive maps
+
+Making interactive maps is also pretty simple using the [leaflet]() package, which wraps the JavaScript library [Leaflet](https://leafletjs.com/).
+
+This example has been kept simple deliberately for readability.
+
+```{r xyplot}
+leaflet(quakes) %>%
+  addTiles() %>%
+  addCircleMarkers(lng=~long, lat=~lat)
+```

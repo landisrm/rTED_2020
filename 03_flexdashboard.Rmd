@@ -9,6 +9,11 @@ output:
 
 ```{r setup, include=FALSE}
 
+# Load development version of tmrtools
+
+devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
+
+
 # Load packages ----------------------------------------------------------------
 
 library(leaflet)
@@ -16,7 +21,9 @@ library(DT)
 
 # Define some functions -------------------------------------------------------
 
-pal = colorNumeric('Reds', domain=c(min(quakes$mag), max(quakes$mag)))
+
+pal = colorNumeric(get_rsg_palette('hot'),
+  domain=c(min(quakes$mag), max(quakes$mag)))
 
 rad_scale = function(mag){
   sizemin = 5
@@ -45,11 +52,8 @@ Column {data-width=500}
 
 leaflet(quakes) %>%
   addTiles() %>%
-  addCircleMarkers(
-    stroke=FALSE,
-    fillOpacity=0.6,
-    color=~pal(mag),
-    radius=~rad_scale(mag))
+  addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
+  addLegend(pal=pal, values=~mag, opacity=0.8)
 
 ```
 
