@@ -7,7 +7,7 @@ output:
 runtime: shiny
 ---
 
-```{r global, include=FALSE}
+```{r global, context='data', include=FALSE}
 
 devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 
@@ -38,10 +38,10 @@ Column {.sidebar}
 -----------------------------------------------------------------------
 
 
-```{r}
+```{r, context='render'}
 
-sliderInput(inputId="mag_adjust", label = "Bandwidth adjustment:",
-            min=min(quakes$mag), max=max(quakes$mag), value = 0.5===, step = 0.1)
+sliderInput(inputId="min_mag", label = "Minimum Magnitude to show",
+            min=min(quakes$mag), max=max(quakes$mag), value = min(quakes$mag), step = 0.1)
 ```
 
 Column {data-width=500}
@@ -49,10 +49,20 @@ Column {data-width=500}
 
 ### Quakes dataset
 
-```{r}
-renderLeaflet({
+```{r, context='render'}
+leafletOutput(outputId='map')
+
+```
+
+```{r, context='server'}
+
+data_filtered = reactive({
+  quakes[quakes$mag > input$min_mag, ]
+})
+
+output$map = renderLeaflet({
   
-  leaflet(quakes) %>%
+  leaflet(data_filtered()) %>%
     addTiles() %>%
     addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
     addLegend(pal=pal, values=~mag, opacity=0.8)
@@ -65,12 +75,16 @@ Column {data-width=500}
 
 ### Quakes dataset
 
-```{r}
+```{r, context='render'}
+DTOutput(outputId='dt')
+```
 
-renderDataTable({
+```{r, context='server'}
+
+output$dt = renderDataTable({
   
   datatable(
-    data=quakes,
+    data=data_filtered(),
     rownames=FALSE,
     extensions="Scroller",
     style="bootstrap",
