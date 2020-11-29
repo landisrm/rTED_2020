@@ -11,6 +11,7 @@ runtime: shiny
 
 devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 
+library(dplyr)
 library(leaflet)
 library(DT)
 
@@ -73,6 +74,38 @@ output$map = renderLeaflet({
     addLegend(pal=pal, values=~mag, opacity=0.8)
   
 })
+
+# Get bounding box to filter data table as in this example
+# https://github.com/Appsilon/crossfilter-demo/blob/master/app/app.R
+
+in_bounding_box = function(data, bounds){
+  
+  cat('North bound:', bounds$north, ' max lat:', max(data$lat), '\n')
+  cat('South bound:', bounds$south, ' min lat:', min(data$lat), '\n')
+  cat('East bound:', bounds$east, ' max long:', max(data$long), '\n')
+  cat('West bound:', bounds$west, ' min long:', min(data$long), '\n')
+  
+  data_filtered = data %>%
+    filter(
+      long < (bounds$east),
+      long > (bounds$west),
+      lat < bounds$north,
+      lat > bounds$south
+    )
+  
+  cat('Nrow:', nrow(data_filtered), '\n')
+  return(data_filtered)
+  
+}
+
+data_dt = reactive({
+  if (is.null(input$map_bounds)){
+    data_filtered()
+  } else {
+    bounds = input$map_bounds
+    in_bounding_box(data_filtered(), bounds)
+  }
+})
 ```
 
 Column {data-width=500}
@@ -89,7 +122,7 @@ DTOutput(outputId='dt')
 output$dt = renderDataTable({
   
   datatable(
-    data=data_filtered(),
+    data=data_dt(),
     rownames=FALSE,
     extensions="Scroller",
     style="bootstrap",
