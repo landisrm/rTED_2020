@@ -4,12 +4,82 @@
 # repo for run app function is at 
 # https://github.com/tknoch8/linked_datatable_leaflet_app.git
 
+devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
+
 require(tidyverse)
 require(shiny)
 require(shinydashboard)
 require(datasets)
 require(DT)
 require(leaflet)
+
+# Define scales for map
+pal = colorNumeric(get_rsg_palette('hot'),
+  domain=c(min(quakes$mag), max(quakes$mag)))
+
+rad_scale = function(mag){
+  sizemin = 5
+  sizemax = 15
+  sizerange = sizemax - sizemin
+  datarange = max(quakes$mag) - min(quakes$mag)
+  scale = sizerange / datarange
+  radius = (mag - min(quakes$mag)) * scale
+  return(radius)
+}
+
+# ui
+my_sidebar <- dashboardSidebar(
+  width = 250,
+  sidebarMenu(
+    id = "menu_1",
+    br(),
+    actionButton(
+      "select_all_rows_button",
+      "Select All Table Rows"
+    ),
+    br(),
+    actionButton(
+      "clear_rows_button",
+      "Clear Table Selections"
+    )
+  )
+)
+
+my_header <- dashboardHeader(title = "Fiji Earthquakes")
+
+my_body <- dashboardBody(
+  
+  fluidRow(
+    box(
+      width = 6,
+      height=750,
+      solidHeader = TRUE,
+      leafletOutput(
+        "my_leaflet",
+        height=700
+      )
+    ),
+    
+    box(
+      width = 6,
+      height=750,
+      solidHeader = TRUE,
+      DTOutput(
+        "my_datatable",
+        height=700
+      )
+    )
+  ) # fluidRow
+  
+) # dashboardBody
+
+
+my_ui <- dashboardPage(
+  header = my_header,
+  sidebar = my_sidebar,
+  body = my_body
+)
+
 
 my_server <- function(session, input, output) {
   
@@ -18,7 +88,18 @@ my_server <- function(session, input, output) {
   output$my_datatable <- renderDT({
     
     quakes_r() %>% 
-      datatable()
+      datatable(
+        rownames=FALSE,
+        extensions="Scroller",
+        style="bootstrap",
+        class=c("compact", "display"),
+        width="100%",
+        fillContainer=TRUE,
+        options=list(
+          deferRender=TRUE,
+          scrollY=300,
+          scroller=TRUE,
+          searching=FALSE))
     
   })
   
@@ -40,6 +121,9 @@ my_server <- function(session, input, output) {
       )
     
   })
+  
+  
+  # Set map to show selected rows
   
   observeEvent(input$my_datatable_rows_selected, {
     
@@ -79,18 +163,15 @@ my_server <- function(session, input, output) {
         data = map_df(),
         lng = ~lng,
         lat = ~lat,
-        fillColor = "blue",
-        stroke = TRUE,
-        color = "white",
-        radius = 3,
-        weight = 1,
-        fillOpacity = 0.4,
-        popup = paste0("lat: ", map_df()$lat, "<br>",
-          "lng: ", map_df()$lng, "<br>",
+        stroke = FALSE,
+        color = ~pal(mag),
+        radius = ~rad_scale(mag),
+        fillOpacity = 0.8,
+        popup = paste0(
           "depth: ", map_df()$depth, "<br>",
           "mag: ", map_df()$mag, "<br>",
-          "stations: ", map_df()$stations)
-      )
+          "stations: ", map_df()$stations))# %>%
+      #addLegend(pal=pal, values=~mag, opacity=0.8)
     
   })
   
@@ -114,55 +195,6 @@ my_server <- function(session, input, output) {
   
 }
 
-
-# ui
-my_sidebar <- dashboardSidebar(
-  width = 250,
-  sidebarMenu(
-    id = "menu_1",
-    br(),
-    actionButton(
-      "select_all_rows_button",
-      "Select All Table Rows"
-    ),
-    br(),
-    actionButton(
-      "clear_rows_button",
-      "Clear Table Selections"
-    )
-  )
-)
-
-my_header <- dashboardHeader(title = "Fiji Earthquakes")
-
-my_body <- dashboardBody(
-  
-  fluidRow(
-    box(
-      width = 12,
-      solidHeader = TRUE,
-      leafletOutput(
-        "my_leaflet"
-      )
-    ),
-    
-    box(
-      width = 12,
-      solidHeader = TRUE,
-      DTOutput(
-        "my_datatable"
-      )
-    )
-  ) # fluidRow
-  
-) # dashboardBody
-
-
-my_ui <- dashboardPage(
-  header = my_header,
-  sidebar = my_sidebar,
-  body = my_body
-)
 
 
 shinyApp(
