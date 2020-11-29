@@ -1,0 +1,111 @@
+---
+title: "Fiji Earthquakes using Shiny"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    source_code: embed
+runtime: shiny
+---
+
+```{r global, context='data', include=FALSE}
+
+devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
+
+library(leaflet)
+library(DT)
+library(crosstalk)
+
+# Define scales for map
+pal = colorNumeric(get_rsg_palette('hot'),
+  domain=c(min(quakes$mag), max(quakes$mag)))
+
+rad_scale = function(mag){
+  sizemin = 5
+  sizemax = 15
+  sizerange = sizemax - sizemin
+  datarange = max(quakes$mag) - min(quakes$mag)
+  scale = sizerange / datarange
+  radius = (mag - min(quakes$mag)) * scale
+  return(radius)
+}
+
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+data(quakes)
+
+
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+
+```{r, context='render'}
+
+sliderInput(
+  inputId="min_mag",
+  label = "Magnitude",
+  min=min(quakes$mag),
+  max=max(quakes$mag), 
+  value = c(min(quakes$mag), max(quakes$mag)),
+  step = 0.1)
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Quakes dataset
+
+```{r, context='render'}
+leafletOutput(outputId='map')
+
+```
+
+```{r, context='server'}
+
+data_filtered = reactive({
+  quakes[quakes$mag > input$min_mag, ]
+})
+sd = SharedData$new(data_filtered)
+
+output$map = renderLeaflet({
+  
+  leaflet(sd) %>%
+    addTiles() %>%
+    addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
+    addLegend(pal=pal, values=~mag, opacity=0.8)
+  
+})
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Quakes dataset
+
+```{r, context='render'}
+DTOutput(outputId='dt')
+```
+
+```{r, context='server'}
+
+output$dt = renderDataTable({
+  
+  datatable(
+    data=sd,
+    rownames=FALSE,
+    extensions="Scroller",
+    style="bootstrap",
+    class=c("compact", "display"),
+    width="100%",
+    fillContainer=TRUE,
+    options=list(
+      deferRender=TRUE,
+      scrollY=300,
+      scroller=TRUE,
+      searching=FALSE)
+  )
+  
+  
+}, server=FALSE)
+```
+
