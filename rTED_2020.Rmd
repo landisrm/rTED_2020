@@ -48,6 +48,8 @@ http://dataexplorer.psrc.org/household-travel-survey/
 ## Outline
 
 - R + Markdown = RMarkdown
+- leaflet
+- DT (DataTable)
 - flexdashboard
 - crosstalk
 - Shiny
@@ -125,6 +127,11 @@ FIXME: Add example
 
 ## TODO:
 Deploy shinyapp https://github.com/RSGInc/tmrtools/wiki/Using-shinyapps.io-to-share-results
+
+shinyapps.io
+- access to database - separate data from the file
+- lock down so it can only be accessed by people specifically given access.
+- custom URLs / redirects
 
 # HTS Example combining best of each
 

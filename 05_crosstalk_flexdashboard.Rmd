@@ -55,7 +55,7 @@ filter_slider(
   sharedData=sd,
   column=~mag,
   step=0.1,
-  width=250)
+  width=200)
 ```
 
 
@@ -89,8 +89,7 @@ datatable(
   options=list(
     deferRender=TRUE,
     scrollY=300,
-    scroller=TRUE,
-    searching=FALSE)
+    scroller=TRUE)
 )
 
 ```

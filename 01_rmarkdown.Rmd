@@ -1,5 +1,5 @@
 ---
-title: "R Markdown example"
+title: "Fiji Earthquakes (static)"
 author: "Matt Landis"
 date: "11/23/2020"
 output: html_document

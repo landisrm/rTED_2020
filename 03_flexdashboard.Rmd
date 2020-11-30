@@ -1,5 +1,5 @@
 ---
-title: "Fiji Earthquakes"
+title: "Fiji Earthquakes with flexdashboard"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns

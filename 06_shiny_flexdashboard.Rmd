@@ -4,7 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     source_code: embed
-runtime: shiny
+runtime: shiny_prerendered
 ---
 
 ```{r global, context='data', include=FALSE}
@@ -41,7 +41,7 @@ Column {.sidebar}
 ```{r, context='render'}
 
 sliderInput(
-  inputId="min_mag",
+  inputId="mag",
   label = "Magnitude",
   min=min(quakes$mag),
   max=max(quakes$mag), 
@@ -62,7 +62,7 @@ leafletOutput(outputId='map')
 ```{r, context='server'}
 
 data_filtered = reactive({
-  quakes[quakes$mag > input$min_mag, ]
+  quakes[quakes$mag >= input$mag[1] & quakes$mag <= input$mag[2], ]
 })
 
 output$map = renderLeaflet({
@@ -100,7 +100,7 @@ output$dt = renderDataTable({
       deferRender=TRUE,
       scrollY=300,
       scroller=TRUE,
-      searching=FALSE)
+      searching=TRUE)
   )
   
   

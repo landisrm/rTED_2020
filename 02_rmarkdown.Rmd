@@ -1,5 +1,5 @@
 ---
-title: "Easy interactivity"
+title: "Fiji Earthquakes (interactive)"
 author: "Matt Landis"
 date: "11/23/2020"
 output: html_document
@@ -35,6 +35,7 @@ We can make interactive tables of data very simply, using the [DT](https://rstud
 ```{r quakes}
 datatable(quakes)
 ```
+
 
 ## Interactive maps with leaflet
 

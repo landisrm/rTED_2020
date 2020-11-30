@@ -28,7 +28,7 @@ rad_scale = function(mag){
 }
 
 # ui
-my_sidebar <- dashboardSidebar(
+ui_sidebar <- dashboardSidebar(
   width = 250,
   sidebarMenu(
     id = "menu_1",
@@ -53,9 +53,9 @@ my_sidebar <- dashboardSidebar(
   )
 )
 
-my_header <- dashboardHeader(title = "Fiji Earthquakes")
+ui_header <- dashboardHeader(title = "Fiji Earthquakes")
 
-my_body <- dashboardBody(
+ui_body <- dashboardBody(
   
   fluidRow(
     box(
@@ -82,14 +82,14 @@ my_body <- dashboardBody(
 ) # dashboardBody
 
 
-my_ui <- dashboardPage(
-  header = my_header,
-  sidebar = my_sidebar,
-  body = my_body
+ui <- dashboardPage(
+  header = ui_header,
+  sidebar = ui_sidebar,
+  body = ui_body
 )
 
 
-my_server <- function(session, input, output) {
+server <- function(session, input, output) {
   
   quakes_r <- reactive({
     quakes %>%
@@ -213,6 +213,6 @@ my_server <- function(session, input, output) {
 
 
 shinyApp(
-  ui = my_ui,
-  server = my_server
+  ui = ui,
+  server = server
 )
