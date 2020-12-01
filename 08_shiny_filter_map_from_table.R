@@ -6,14 +6,14 @@
 
 # Global ----------------------------------------------------------------------
 
-devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
-
 require(tidyverse)
 require(shiny)
 require(shinydashboard)
 require(datasets)
 require(DT)
 require(leaflet)
+
+source('tmrtools.R')
 
 # Load data
 

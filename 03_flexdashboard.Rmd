@@ -9,17 +9,13 @@ output:
 
 ```{r setup, include=FALSE}
 
-# Load development version of tmrtools
-
-devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
-
-
 # Load packages ----------------------------------------------------------------
 
 library(data.table)
 library(leaflet)
 library(DT)
 
+source('tmrtools.R')
 
 # Create data -----------------------------------------------------------------
 

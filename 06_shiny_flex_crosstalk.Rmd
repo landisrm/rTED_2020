@@ -4,17 +4,17 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     source_code: embed
-runtime: shiny_prerendered
+runtime: shiny
 ---
 
 ```{r global, context='data', include=FALSE}
-
-devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 
 library(data.table)
 library(crosstalk)
 library(leaflet)
 library(DT)
+
+source('tmrtools')
 
 # Create data -----------------------------------------------------------------
 

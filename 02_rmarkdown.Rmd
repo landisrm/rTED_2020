@@ -12,11 +12,6 @@ editor_options:
 # Set options
 knitr::opts_chunk$set(echo = TRUE, comment = '')
 
-# Load development version of tmrtools
-
-devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
-
-
 # Load libraries 
 
 library(data.table)
