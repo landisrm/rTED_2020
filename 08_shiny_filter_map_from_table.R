@@ -4,6 +4,8 @@
 # repo for run app function is at 
 # https://github.com/tknoch8/linked_datatable_leaflet_app.git
 
+# Global ----------------------------------------------------------------------
+
 devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 
 require(tidyverse)
@@ -13,21 +15,27 @@ require(datasets)
 require(DT)
 require(leaflet)
 
-# Define scales for map
-pal = colorNumeric(get_rsg_palette('hot'),
-  domain=c(min(quakes$mag), max(quakes$mag)))
+# Load data
 
-rad_scale = function(mag){
-  sizemin = 5
-  sizemax = 15
-  sizerange = sizemax - sizemin
-  datarange = max(quakes$mag) - min(quakes$mag)
-  scale = sizerange / datarange
-  radius = (mag - min(quakes$mag)) * scale
-  return(radius)
-}
+hh_labeled = readRDS('data/tnc_bayarea_hh_labeled.rds')
+hh_map = hh_labeled[
+  !income_aggregate %in% c('Prefer not to answer', 'Missing: Non-response', 'Missing: Skip logic') & !is.na(income_aggregate)]
 
-# ui
+
+# Define map palette
+
+income_levels = levels(factor(hh_map[, income_aggregate]))
+pal = colorFactor(
+  colorRampPalette(
+    get_rsg_palette('hot')
+  )(length(income_levels)),
+  levels=income_levels)
+
+box_height = 750
+map_center = c(lon=-122.44365, lat=37.75841)
+
+# ui --------------------------------------------------------------------------
+
 ui_sidebar <- dashboardSidebar(
   width = 250,
   sidebarMenu(
@@ -43,39 +51,31 @@ ui_sidebar <- dashboardSidebar(
       "Clear Table Selections"
     ),
     br(),
-    sliderInput(
-      inputId="mag",
-      label = "Magnitude",
-      min=min(quakes$mag),
-      max=max(quakes$mag), 
-      value = c(min(quakes$mag), max(quakes$mag)),
-      step = 0.1)
+    checkboxGroupInput(
+      inputId="income",
+      label = "Income",
+      choices = income_levels, 
+      selected = income_levels)
   )
 )
 
-ui_header <- dashboardHeader(title = "Fiji Earthquakes")
+ui_header <- dashboardHeader(title = "HTS Households with Shiny")
 
 ui_body <- dashboardBody(
   
   fluidRow(
     box(
-      width = 6,
-      height=750,
+      width = 12 * 0.5,
+      height=box_height,
       solidHeader = TRUE,
-      leafletOutput(
-        "my_leaflet",
-        height=700
-      )
+      leafletOutput("map", height=box_height - 50)
     ),
     
     box(
-      width = 6,
-      height=750,
+      width = 12 * 0.5,
+      height=box_height,
       solidHeader = TRUE,
-      DTOutput(
-        "my_datatable",
-        height=700
-      )
+      DTOutput("tbl", height=box_height - 50)
     )
   ) # fluidRow
   
@@ -89,20 +89,18 @@ ui <- dashboardPage(
 )
 
 
+# server ---------------------------------------------------------------------
+
 server <- function(session, input, output) {
   
-  quakes_r <- reactive({
-    quakes %>%
-      as_tibble() %>%
-      filter(
-        mag > input$mag[1],
-        mag < input$mag[2]
-      )
+  data_r = reactive({
+    hh_map[income_aggregate %in% input$income]
   })
   
-  output$my_datatable <- renderDT({
+  
+  output$tbl <- renderDT({
     
-    quakes_r() %>% 
+    data_r() %>% 
       datatable(
         rownames=FALSE,
         extensions="Scroller",
@@ -120,7 +118,7 @@ server <- function(session, input, output) {
   
   
   # base map that we will add points to with leafletProxy()
-  output$my_leaflet <- renderLeaflet({
+  output$map <- renderLeaflet({
     
     leaflet() %>% 
       addProviderTiles(
@@ -130,68 +128,71 @@ server <- function(session, input, output) {
         )
       ) %>% 
       setView(
-        lat = -25.5,
-        lng = 178.58,
-        zoom = 4
-      )
+        lat = map_center['lat'],
+        lng = map_center['lon'],
+        zoom = 10
+      ) # %>%
+    # addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
     
   })
   
   
   # Set map to show selected rows
   
-  observeEvent(input$my_datatable_rows_selected, {
+  observeEvent(input$tbl_rows_selected, {
     
-    selected_lats <- eventReactive(input$my_datatable_rows_selected, {
-      as.list(quakes_r()$lat[c(unique(input$my_datatable_rows_selected))])
+    selected_lat <- eventReactive(input$tbl_rows_selected, {
+      as.list(data_r()$reported_home_lat[c(unique(input$tbl_rows_selected))])
     })
     
-    selected_longs <- eventReactive(input$my_datatable_rows_selected, {
-      as.list(quakes_r()$long[c(unique(input$my_datatable_rows_selected))])
+    selected_lng <- eventReactive(input$tbl_rows_selected, {
+      as.list(data_r()$reported_home_lon[c(unique(input$tbl_rows_selected))])
     })
     
-    selected_depths <- eventReactive(input$my_datatable_rows_selected, {
-      as.list(quakes_r()$depth[c(unique(input$my_datatable_rows_selected))])
+    selected_income_aggregate <- eventReactive(input$tbl_rows_selected, {
+      as.list(data_r()$income_aggregate[c(unique(input$tbl_rows_selected))])
+    })
+      
+    # Data for pop-up
+    selected_hh_id <- eventReactive(input$tbl_rows_selected, {
+      as.list(data_r()$hh_id[c(unique(input$tbl_rows_selected))])
     })
     
-    selected_mags <- eventReactive(input$my_datatable_rows_selected, {
-      as.list(quakes_r()$mag[c(unique(input$my_datatable_rows_selected))])
-    })
-    
-    selected_stations <- eventReactive(input$my_datatable_rows_selected, {
-      as.list(quakes_r()$stations[c(unique(input$my_datatable_rows_selected))])
+    selected_income <- eventReactive(input$tbl_rows_selected, {
+      as.list(data_r()$income_detailed[c(unique(input$tbl_rows_selected))])
     })
     
     # this is the data that will be passed to the leaflet in the addCircleMarkers argument,
     # as well as the popups when the points are hovered over
     map_df <- reactive({
-      tibble(lat = unlist(selected_lats()),
-        lng = unlist(selected_longs()),
-        depth = unlist(selected_depths()),
-        mag = unlist(selected_mags()),
-        stations = unlist(selected_stations()))
+      tibble(
+        lat = unlist(selected_lat()),
+        lng = unlist(selected_lng()),
+        income_aggregate = unlist(selected_income_aggregate()),
+        hh_id = unlist(selected_hh_id()),
+        income = unlist(selected_income())
+        )
     })
     
-    leafletProxy("my_leaflet", session) %>% 
+    leafletProxy("map", session) %>% 
       clearMarkers() %>% 
       addCircleMarkers(
-        data = map_df(),
-        lng = ~lng,
-        lat = ~lat,
-        stroke = FALSE,
-        color = ~pal(mag),
-        radius = ~rad_scale(mag),
-        fillOpacity = 0.8,
+        data=map_df(),
+        lng=~lng,
+        lat=~lat,
+        stroke=FALSE,
+        radius=5,
+        fillOpacity=0.5,
+        color=~pal(income_aggregate),
         popup = paste0(
-          "depth: ", map_df()$depth, "<br>",
-          "mag: ", map_df()$mag, "<br>",
-          "stations: ", map_df()$stations))# %>%
-      #addLegend(pal=pal, values=~mag, opacity=0.8)
-    
+           'hh_id: ', map_df()$hh_id, '<br>',
+           'income: ', map_df()$income, '<br>')) # %>%
+      # # addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
+
   })
   
   # create a proxy to modify datatable without recreating it completely
-  DT_proxy <- dataTableProxy("my_datatable")
+  DT_proxy <- dataTableProxy("tbl")
   
   # clear row selections when clear_rows_button is clicked
   observeEvent(input$clear_rows_button, {
@@ -200,17 +201,18 @@ server <- function(session, input, output) {
   
   # clear markers from leaflet when clear_rows_button is clicked
   observeEvent(input$clear_rows_button, {
-    clearMarkers(leafletProxy("my_leaflet", session))
+    clearMarkers(leafletProxy("map", session))
   })
   
   # select all rows when select_all_rows_button is clicked
   observeEvent(input$select_all_rows_button, {
-    selectRows(DT_proxy, input$my_datatable_rows_all)
+    selectRows(DT_proxy, input$tbl_rows_all)
   })
   
 }
 
 
+# app -------------------------------------------------------------------------
 
 shinyApp(
   ui = ui,
