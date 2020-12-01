@@ -45,12 +45,13 @@ datatable(hh_table)
 
 Making interactive maps is also pretty simple using the [leaflet]() package, which wraps the JavaScript library [Leaflet](https://leafletjs.com/).
 
-This example has been kept simple deliberately for readability of the code.
+This example has been kept as simple as possible to keep the code readable.
 
 ```{r map}
 leaflet(hh_map) %>%
   addTiles() %>%
   addCircleMarkers(
-    lng=~reported_home_lon, lat=~reported_home_lat,
-    radius=5, stroke=FALSE)
+    lng=~reported_home_lon,
+    lat=~reported_home_lat,
+    radius=3)
 ```

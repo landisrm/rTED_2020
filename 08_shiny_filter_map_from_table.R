@@ -184,9 +184,9 @@ server <- function(session, input, output) {
         radius=5,
         fillOpacity=0.5,
         color=~pal(income_aggregate),
-        popup = paste0(
-           'hh_id: ', map_df()$hh_id, '<br>',
-           'income: ', map_df()$income, '<br>')) # %>%
+        popup = ~paste0(
+           'hh_id: ', hh_id, '<br>',
+           'income: ', income, '<br>')) # %>%
       # # addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
 
   })
