@@ -1,5 +1,5 @@
 ---
-title: "Fiji Earthquakes (interactive)"
+title: "HTS Households (interactive)"
 author: "Matt Landis"
 date: "11/23/2020"
 output: html_document
@@ -19,12 +19,16 @@ devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/
 
 # Load libraries 
 
+library(data.table)
 library(DT)
 library(leaflet)
 
 # Load data
+hh_labeled = readRDS('data/tnc_bayarea_hh_labeled.rds')
+hh_map = hh_labeled[
+  !income_aggregate %in% c('Prefer not to answer', 'Missing: Non-response', 'Missing: Skip logic') & !is.na(income_aggregate)]
 
-data(quakes)
+hh_table = hh_labeled[, .(hh_id, num_people, num_vehicles, income_aggregate, res_type)]
 
 ```
 
@@ -32,8 +36,8 @@ data(quakes)
 
 We can make interactive tables of data very simply, using the [DT](https://rstudio.github.io/DT/) package, which is an R interface to the JavaScript library [DataTables](https://datatables.net/).
 
-```{r quakes}
-datatable(quakes)
+```{r showdata}
+datatable(hh_table)
 ```
 
 
@@ -41,10 +45,12 @@ datatable(quakes)
 
 Making interactive maps is also pretty simple using the [leaflet]() package, which wraps the JavaScript library [Leaflet](https://leafletjs.com/).
 
-This example has been kept simple deliberately for readability.
+This example has been kept simple deliberately for readability of the code.
 
-```{r xyplot}
-leaflet(quakes) %>%
+```{r map}
+leaflet(hh_map) %>%
   addTiles() %>%
-  addCircleMarkers(lng=~long, lat=~lat)
+  addCircleMarkers(
+    lng=~reported_home_lon, lat=~reported_home_lat,
+    radius=5, stroke=FALSE)
 ```

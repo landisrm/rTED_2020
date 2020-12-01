@@ -1,5 +1,5 @@
 ---
-title: "Fiji Earthquakes using crosstalk"
+title: "HTS Households with crosstalk"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -13,83 +13,87 @@ output:
 
 devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 
+library(data.table)
 library(crosstalk)
 library(leaflet)
 library(DT)
 
-# Define some functions -------------------------------------------------------
-
-# Define scales for map
-pal = colorNumeric(get_rsg_palette('hot'),
-  domain=c(min(quakes$mag), max(quakes$mag)))
-
-rad_scale = function(mag){
-  sizemin = 5
-  sizemax = 15
-  sizerange = sizemax - sizemin
-  datarange = max(quakes$mag) - min(quakes$mag)
-  scale = sizerange / datarange
-  radius = (mag - min(quakes$mag)) * scale
-  return(radius)
-}
-
 
 # Create data -----------------------------------------------------------------
-data(quakes)
+
+hh_labeled = readRDS('data/tnc_bayarea_hh_labeled.rds')
+hh_map = hh_labeled[
+  !income_aggregate %in% c('Prefer not to answer', 'Missing: Non-response', 'Missing: Skip logic') & !is.na(income_aggregate)]
+
+
+# Define map palette  -------------------------------------------------------
+
+income_levels = levels(factor(hh_map[, income_aggregate]))
+pal = colorFactor(
+  colorRampPalette(
+    get_rsg_palette('hot')
+    )(length(income_levels)),
+  levels=income_levels)
+
 
 # Wrap data frame in SharedData
-sd = SharedData$new(quakes)
+sd = SharedData$new(hh_map)
 
 ```
 
 Column {.sidebar}
 -----------------------------------------------------------------------
 
-Select the magnitude of the earthquake
+Select income range(s) of interest
 
 ```{r}
 # Create a filter input
-filter_slider(
-  id="mag", 
-  label="Magnitude", 
+filter_checkbox(
+  id="income", 
+  label="Income", 
   sharedData=sd,
-  column=~mag,
-  step=0.1,
-  width=200)
+  group=~income_aggregate)
 ```
 
 
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Quakes dataset
+### Interactive maps with `leaflet`
 
 ```{r}
 
 leaflet(sd) %>%
   addTiles() %>%
-  addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
-  addLegend(pal=pal, values=~mag, opacity=0.8)
+  addCircleMarkers(
+    lng=~reported_home_lon,
+    lat=~reported_home_lat,
+    stroke=FALSE,
+    radius=5,
+    fillOpacity=0.5,
+    color=~pal(income_aggregate)) %>%
+  addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
 
 ```
 
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Quakes dataset
+### Interactive tables with `DT`
 
 ```{r}
 datatable(
   data=sd,
-  rownames=FALSE,
   extensions="Scroller",
   style="bootstrap",
-  class=c("compact", "display"),
+  class=c("display", "compact"),
+  rownames=FALSE,
   width="100%",
-  options=list(
-    deferRender=TRUE,
-    scrollY=300,
-    scroller=TRUE)
+   options=list(
+     deferRender=TRUE,
+     scrollY=300,
+     scroller=TRUE,
+     searching=TRUE)
 )
 
 ```

@@ -1,5 +1,5 @@
 ---
-title: "Fiji Earthquakes with flexdashboard"
+title: "HTS Households with flexdashboard"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -16,29 +16,28 @@ devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/
 
 # Load packages ----------------------------------------------------------------
 
+library(data.table)
 library(leaflet)
 library(DT)
-
-# Define some functions -------------------------------------------------------
-
-
-pal = colorNumeric(get_rsg_palette('hot'),
-  domain=c(min(quakes$mag), max(quakes$mag)))
-
-rad_scale = function(mag){
-  sizemin = 5
-  sizemax = 15
-  sizerange = sizemax - sizemin
-  datarange = max(quakes$mag) - min(quakes$mag)
-  scale = sizerange / datarange
-  radius = (mag - min(quakes$mag)) * scale
-  return(radius)
-}
 
 
 # Create data -----------------------------------------------------------------
 
-data(quakes)
+# Load data
+hh_labeled = readRDS('data/tnc_bayarea_hh_labeled.rds')
+hh_map = hh_labeled[
+  !income_aggregate %in% c('Prefer not to answer', 'Missing: Non-response', 'Missing: Skip logic') & !is.na(income_aggregate)]
+
+hh_table = hh_labeled[, .(hh_id, num_people, num_vehicles, income_aggregate, res_type)]
+
+# Define map palette  -------------------------------------------------------
+
+income_levels = levels(factor(hh_map[, income_aggregate]))
+pal = colorFactor(
+  colorRampPalette(
+    get_rsg_palette('hot')
+    )(length(income_levels)),
+  levels=income_levels)
 
 ```
 
@@ -46,25 +45,31 @@ data(quakes)
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Quakes dataset
+### Interactive maps with `leaflet`
 
 ```{r}
 
-leaflet(quakes) %>%
+leaflet(hh_map) %>%
   addTiles() %>%
-  addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
-  addLegend(pal=pal, values=~mag, opacity=0.8)
+  addCircleMarkers(
+    lng=~reported_home_lon,
+    lat=~reported_home_lat,
+    stroke=FALSE,
+    radius=5,
+    fillOpacity=0.5,
+    color=~pal(income_aggregate)) %>%
+  addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
 
 ```
 
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Quakes dataset
+### Interactive tables with `DT`
 
 ```{r}
 datatable(
-  data=quakes,
+  data=hh_table,
   extensions="Scroller",
   style="bootstrap",
   class=c("display", "compact"),
@@ -74,7 +79,7 @@ datatable(
      deferRender=TRUE,
      scrollY=300,
      scroller=TRUE,
-     searching=FALSE)
+     searching=TRUE)
   )
 ```
 

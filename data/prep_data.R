@@ -34,6 +34,9 @@ if ( file.exists(vv_path) ){
   # read in variable labels and logic
   varnames = read_codebook(codebook_path=params$codebook_path, varvals=FALSE)
   
+  saveRDS(varvals, file.path('data', paste0(params$dbname, '_varvals.rds')))
+  saveRDS(varnames, file.path('data', paste0(params$dbname, '_varnames.rds')))
+  
   save(varvals, varnames, file=vv_path)
 }
 
@@ -235,6 +238,34 @@ save(
   location,
   D, D2, M, home_distance, long_dwell,
   file = data_file)
+
+# Save labeled data
+
+hh_labeled = factorize_df(
+  hh[,
+    .(hh_id, num_people, rent_own, income_detailed, res_type,
+      reported_home_lon, reported_home_lat)],
+  vals_df=varvals[!is.na(label)],
+  value_label_colname='label',
+  extra_labels = '_All categorical variables_',
+  verbose=FALSE)
+
+hh_labeled[, reported_home_lon := round(reported_home_lon, 3)]
+hh_labeled[, reported_home_lat := round(reported_home_lat, 3)]
+
+saveRDS(hh_labeled, file.path('data', paste0(params$dbname, '_hh_labeled.rds')))
+
+
+person_labeled = factorize_df(
+  person[, .(person_id, age, gender, employment, worker, student, education, work_lon, work_lat)],
+  vals_df=varvals[!is.na(label)],
+  value_label_colname='label',
+  extra_labels = '_All categorical variables_',
+  verbose=FALSE)
+
+saveRDS(person_labeled, file.path('data', paste0(params$dbname, '_person_labeled.rds')))
+
+
 
 # spatial data ----------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 ---
-title: "Fiji Earthquakes using Shiny"
+title: "HTS Households using Shiny"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -11,48 +11,46 @@ runtime: shiny_prerendered
 
 devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 
+library(data.table)
 library(leaflet)
 library(DT)
 
-# Define scales for map
-pal = colorNumeric(get_rsg_palette('hot'),
-  domain=c(min(quakes$mag), max(quakes$mag)))
+# Create data -----------------------------------------------------------------
 
-rad_scale = function(mag){
-  sizemin = 5
-  sizemax = 15
-  sizerange = sizemax - sizemin
-  datarange = max(quakes$mag) - min(quakes$mag)
-  scale = sizerange / datarange
-  radius = (mag - min(quakes$mag)) * scale
-  return(radius)
-}
+hh_labeled = readRDS('data/tnc_bayarea_hh_labeled.rds')
+hh_map = hh_labeled[
+  !income_aggregate %in% c('Prefer not to answer', 'Missing: Non-response', 'Missing: Skip logic') & !is.na(income_aggregate)]
 
-# load data in 'global' chunk so it can be shared by all users of the dashboard
-data(quakes)
 
+# Define map palette  -------------------------------------------------------
+
+income_levels = levels(factor(hh_map[, income_aggregate]))
+pal = colorFactor(
+  colorRampPalette(
+    get_rsg_palette('hot')
+    )(length(income_levels)),
+  levels=income_levels)
 
 ```
 
 Column {.sidebar}
 -----------------------------------------------------------------------
 
+Select income range(s) of interest
 
 ```{r, context='render'}
 
-sliderInput(
-  inputId="mag",
-  label = "Magnitude",
-  min=min(quakes$mag),
-  max=max(quakes$mag), 
-  value = c(min(quakes$mag), max(quakes$mag)),
-  step = 0.1)
+checkboxGroupInput(
+  inputId="income",
+  label = "Income",
+  choices = income_levels, 
+  selected = income_levels)
 ```
 
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Quakes dataset
+### Interactive maps with `leaflet`
 
 ```{r, context='render'}
 leafletOutput(outputId='map')
@@ -62,15 +60,21 @@ leafletOutput(outputId='map')
 ```{r, context='server'}
 
 data_filtered = reactive({
-  quakes[quakes$mag >= input$mag[1] & quakes$mag <= input$mag[2], ]
+  hh_map[income_aggregate %in% input$income]
 })
 
 output$map = renderLeaflet({
   
-  leaflet(data_filtered()) %>%
-    addTiles() %>%
-    addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
-    addLegend(pal=pal, values=~mag, opacity=0.8)
+leaflet(data_filtered()) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng=~reported_home_lon,
+    lat=~reported_home_lat,
+    stroke=FALSE,
+    radius=5,
+    fillOpacity=0.5,
+    color=~pal(income_aggregate)) %>%
+  addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
   
 })
 ```
@@ -78,7 +82,7 @@ output$map = renderLeaflet({
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Quakes dataset
+### Interactive tables with `DT`
 
 ```{r, context='render'}
 DTOutput(outputId='dt')
@@ -90,15 +94,14 @@ output$dt = renderDataTable({
   
   datatable(
     data=data_filtered(),
-    rownames=FALSE,
     extensions="Scroller",
     style="bootstrap",
-    class=c("compact", "display"),
+    class=c("display", "compact"),
+    rownames=FALSE,
     width="100%",
-    fillContainer=TRUE,
     options=list(
-      deferRender=TRUE,
-      scrollY=300,
+      #deferRender=TRUE,
+      scrollY='650px',
       scroller=TRUE,
       searching=TRUE)
   )

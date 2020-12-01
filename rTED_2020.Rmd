@@ -81,16 +81,12 @@ I like it because:
   - Create HTML pages, presentations, Word docs, PDF, dashboards, etc.
   - Learn more at [markdownguide.org](https://www.markdownguide.org/getting-started/) and try it out at [dillinger.io](https://dillinger.io/).
 
-
-FIXME: Add example
-
 ## RMarkdown
 
   - Combines plain text of Markdown with R code
   - Compiling replaces R code with output of R - figures, tables, text
   - Can export to HTML, PDF, Word
   - Results can use RSG branding, like this slideshow (written in RMarkdown and exported to HTML)
-  - Do we have RSG CSS?
 
 ## Communicating data
 
@@ -98,19 +94,20 @@ FIXME: Add example
   - can function as a notebook for developing analyses and methods
   - For sharing data internally
   - For sharing data externally
-  
-## Themes
 
-??
 
-# flexdashboard
+# interactive graphics
+
+## htmlwidgets
+
+- htmlwidgets http://www.htmlwidgets.org/index.html
+- packages that wrap JavaScript libraries and make them accessible in R
+- DT (DataTables)
+- leaflet (Leaflet)
+- others
 
 ## flexdashboard
 
-
-
-
-# crosstalk
 
 ## crosstalk
 
@@ -120,8 +117,6 @@ FIXME: Add example
   - Limitations
     - Dataset has to be relatively small
     - Not all graphics are supported (e.g. histograms, lines on maps)
-
-# shiny
 
 ## shiny
 
@@ -133,7 +128,7 @@ shinyapps.io
 - lock down so it can only be accessed by people specifically given access.
 - custom URLs / redirects
 
-# HTS Example combining best of each
+## HTS Example combining best of each
 
 
 # Summary
@@ -141,8 +136,8 @@ shinyapps.io
 ## Packages demoed
 
   - rmarkdown
+  - leaflet
+  - datatable
   - flexdashboard
   - crosstalk
   - shiny
-  - leaflet
-  - datatable

@@ -1,80 +1,37 @@
 ---
-title: "Fiji Earthquakes using Shiny"
+title: "HTS Households using Shiny"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
     source_code: embed
-runtime: shiny_prerendered
+runtime: shiny
 ---
 
 ```{r global, context='data', include=FALSE}
 
 devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools')
 
-library(dplyr)
+library(data.table)
 library(leaflet)
 library(DT)
 
-# Define scales for map
-pal = colorNumeric(get_rsg_palette('hot'),
-  domain=c(min(quakes$mag), max(quakes$mag)))
+# Create data -----------------------------------------------------------------
 
-rad_scale = function(mag){
-  sizemin = 5
-  sizemax = 15
-  sizerange = sizemax - sizemin
-  datarange = max(quakes$mag) - min(quakes$mag)
-  scale = sizerange / datarange
-  radius = (mag - min(quakes$mag)) * scale
-  return(radius)
-}
-
-# load data in 'global' chunk so it can be shared by all users of the dashboard
-data(quakes)
+hh_labeled = readRDS('data/tnc_bayarea_hh_labeled.rds')
+hh_map = hh_labeled[
+  !income_aggregate %in% c('Prefer not to answer', 'Missing: Non-response', 'Missing: Skip logic') & !is.na(income_aggregate)]
 
 
-```
+# Define map palette  -------------------------------------------------------
 
-Column {.sidebar}
------------------------------------------------------------------------
+income_levels = levels(factor(hh_map[, income_aggregate]))
+pal = colorFactor(
+  colorRampPalette(
+    get_rsg_palette('hot')
+    )(length(income_levels)),
+  levels=income_levels)
 
-
-```{r, context='render'}
-
-sliderInput(
-  inputId="mag",
-  label = "Magnitude",
-  min=min(quakes$mag),
-  max=max(quakes$mag), 
-  value = c(min(quakes$mag), max(quakes$mag)),
-  step = 0.1)
-```
-
-Column {data-width=500}
------------------------------------------------------------------------
-
-### Quakes dataset
-
-```{r, context='render'}
-leafletOutput(outputId='map')
-
-```
-
-```{r, context='server'}
-
-data_filtered = reactive({
-  quakes[quakes$mag >= input$mag[1] & quakes$mag <= input$mag[2], ]
-})
-
-output$map = renderLeaflet({
-  
-  leaflet(data_filtered()) %>%
-    addTiles() %>%
-    addCircleMarkers(lng=~long, lat=~lat, stroke=FALSE, fillOpacity=0.8, color=~pal(mag), radius=~rad_scale(mag)) %>%
-    addLegend(pal=pal, values=~mag, opacity=0.8)
-  
-})
-
+# Function -----------------------------------------------------------------
 # Get bounding box to filter data table as in this example
 # https://github.com/Appsilon/crossfilter-demo/blob/master/app/app.R
 
@@ -85,18 +42,52 @@ in_bounding_box = function(data, bounds){
   cat('East bound:', bounds$east, ' max long:', max(data$long), '\n')
   cat('West bound:', bounds$west, ' min long:', min(data$long), '\n')
   
-  data_filtered = data %>%
-    filter(
-      long < (bounds$east),
-      long > (bounds$west),
-      lat < bounds$north,
-      lat > bounds$south
-    )
+  data_filtered = data[
+    reported_home_lon < bounds$east &
+    reported_home_lon > bounds$west &
+    reported_home_lat < bounds$north &
+    reported_home_lat > bounds$south]
   
   cat('Nrow:', nrow(data_filtered), '\n')
   return(data_filtered)
   
 }
+
+```
+
+
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+Select income range(s) of interest
+
+```{r, context='render'}
+
+checkboxGroupInput(
+  inputId="income",
+  label = "Income",
+  choices = income_levels, 
+  selected = income_levels)
+```
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Interactive maps with `leaflet`
+
+```{r, context='render'}
+leafletOutput(outputId='map')
+
+```
+
+```{r, context='server'}
+
+data_filtered = reactive({
+  hh_map[income_aggregate %in% input$income]
+})
 
 data_dt = reactive({
   if (is.null(input$map_bounds)){
@@ -106,12 +97,29 @@ data_dt = reactive({
     in_bounding_box(data_filtered(), bounds)
   }
 })
+
+output$map = renderLeaflet({
+  
+leaflet(data_dt()) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng=~reported_home_lon,
+    lat=~reported_home_lat,
+    stroke=FALSE,
+    radius=5,
+    fillOpacity=0.5,
+    color=~pal(income_aggregate)) %>%
+  addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
+  
+})
+
+
 ```
 
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Quakes dataset
+### Interactive tables with `DT`
 
 ```{r, context='render'}
 DTOutput(outputId='dt')
@@ -123,17 +131,16 @@ output$dt = renderDataTable({
   
   datatable(
     data=data_dt(),
-    rownames=FALSE,
     extensions="Scroller",
     style="bootstrap",
-    class=c("compact", "display"),
+    class=c("display", "compact"),
+    rownames=FALSE,
     width="100%",
-    fillContainer=TRUE,
     options=list(
-      deferRender=TRUE,
-      scrollY=300,
+      #deferRender=TRUE,
+      scrollY='650px',
       scroller=TRUE,
-      searching=FALSE)
+      searching=TRUE)
   )
   
   
