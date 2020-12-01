@@ -3,11 +3,12 @@
 # This script reads all the data and saves it as an Rdata file for loading in
 # htsViewer.Rmd.
 
+# Load development version of tmrtools
+devtools::load_all('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc/Git/tmrtools/')
 
 library(DBI)
 library(sf)
 library(dplyr)
-library(tmrtools)
 library(data.table)
 library(lubridate)
 library(stringr)
@@ -243,15 +244,22 @@ save(
 
 hh_labeled = factorize_df(
   hh[,
-    .(hh_id, num_people, rent_own, income_detailed, res_type,
+    .(hh_id, num_people, rent_own, income_detailed, income_aggregate, res_type,
       reported_home_lon, reported_home_lat)],
   vals_df=varvals[!is.na(label)],
   value_label_colname='label',
   extra_labels = '_All categorical variables_',
   verbose=FALSE)
 
-hh_labeled[, reported_home_lon := round(reported_home_lon, 3)]
-hh_labeled[, reported_home_lat := round(reported_home_lat, 3)]
+# anonymize the data
+
+hh_labeled[, hh_id := sample(hh_id, size=length(hh_id))]
+
+idx = sample(1:nrow(hh_labeled), size=nrow(hh_labeled))
+hh_labeled[, `:=`(
+  reported_home_lon = round(reported_home_lon[idx], 3),
+  reported_home_lat = round(reported_home_lat[idx], 3)
+)]
 
 saveRDS(hh_labeled, file.path('data', paste0(params$dbname, '_hh_labeled.rds')))
 
