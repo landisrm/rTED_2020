@@ -17,7 +17,6 @@ knitr::opts_chunk$set(echo = TRUE, comment = '')
 # Load libraries 
 
 suppressPackageStartupMessages({
-  library(shiny)
   library(data.table)
   library(DT)
   library(leaflet)

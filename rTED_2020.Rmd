@@ -20,96 +20,112 @@ knitr::knit_engines$set('markdown')
 ```
 
 
-## About me
+## htsViewer
 
-+ Ph.D. from Dartmouth in forest ecology
-+ Joined RSG in 2017 as a Data Scientist
-+ Taught ecology and data visualization at Middlebury College
-+ Worked as a data scientist on environment and international security
+  - Data visualization for quality control and assurance of HTS data
+  - Interactive dashboard
+  - Based on RMarkdown
+  - In an alpha, proof of concept state
+  - Project is at https://github.com/RSGInc/htsViewer
+  - Show (running locally)
 
 ## Goals for this talk
 
-- Share my experience creating a tool for visualizing household travel survey data (htsViewer)
 - Demonstrate some tools for presenting data
   - internally for quality assurance, communication to colleagues
   - externally for reporting to clients
 - Focus is on **interactive** data presentation  
-
-## htsViewer
-
-  - Goal is to make it easy to see HTS data
-  - Project is at https://github.com/RSGInc/htsViewer
-  - Show (running locally)
+- Strengths and limitations of different approaches
 
 ## Outline
 
-- R + Markdown = RMarkdown
-- leaflet
-- DT (DataTable)
-- flexdashboard
-- crosstalk
-- Shiny
+- R + Markdown = `RMarkdown`
+- `leaflet`
+- `DT` (DataTable)
+- `flexdashboard`
+- `crosstalk`
+- `shiny`
 
 
 # R + Markdown = RMarkdown
 
-## R
+## `R`
 
-  - If you work with data, you probably already know a lot about R
+  - If you work with data, you probably already know a lot about `R`
   - if you don't, it's one of the main computer languages we use here at RSG
-  - Extremely versatile language for data analysis
-  - One of the most widely used data languages in the world, along with SQL and Python
-  - Based heavily on S, a statistical computer language developed at Bell Labs in the 1970's
-  - Excellent data visualization facilities built-in
+  - One of the most widely used data languages in the world, along with `SQL` and `Python`
+  - Descended from `S`, a computer language developed at Bell Labs in the 1970's for statistical analysis and data visualization
+  - Open source and free, with excellent framework for contributing extensions
+  - Over 10,000 packages available
+
   
 ## Markdown
 
 ```
 ## Markdown
 
-This is **Markdown**, a lightweight markup language. You use it to format text.
+This is [**Markdown**](https://daringfireball.net/projects/markdown/), a lightweight markup language for formatting text.
 
 I like it because:
 
   - It is very readable even in plain text
   - code is easy to distinguish: `foo`, `bar`, `baz`.
   - It's versatile!  Use in  [Teams](https://support.microsoft.com/en-ie/office/use-markdown-formatting-in-teams-4d10bd65-55e2-4b2d-a1f3-2bebdcd2c772) and [Github](https://guides.github.com/features/mastering-markdown/), not to mention [RStudio](https://rmarkdown.rstudio.com/).
-  - Create HTML pages, presentations, Word docs, PDF, dashboards, etc.
   - Learn more at [markdownguide.org](https://www.markdownguide.org/getting-started/) and try it out at [dillinger.io](https://dillinger.io/).
 
 ```
 
 ## Markdown
 
-This is **Markdown**, a lightweight markup language. You use it to format text.
+This is [**Markdown**](https://daringfireball.net/projects/markdown/), a lightweight markup language for formatting text.
 
 I like it because:
 
   - It is very readable even in plain text
   - code is easy to distinguish: `foo`, `bar`, `baz`.
   - It's versatile!  Use in  [Teams](https://support.microsoft.com/en-ie/office/use-markdown-formatting-in-teams-4d10bd65-55e2-4b2d-a1f3-2bebdcd2c772) and [Github](https://guides.github.com/features/mastering-markdown/), not to mention [RStudio](https://rmarkdown.rstudio.com/).
-  - Create HTML pages, presentations, Word docs, PDF, dashboards, etc.
   - Learn more at [markdownguide.org](https://www.markdownguide.org/getting-started/) and try it out at [dillinger.io](https://dillinger.io/).
 
 ## RMarkdown
 
+Combines the two together in a single document like this:
+
+```
+## Including Plots
+
+You can also embed plots, for example, here is a simple map of home locations in an HTS survey.
+
+``{r map}
+ggplot(hh_map, aes(x=reported_home_lon, y=reported_home_lat)) +
+  geom_point(size=2, color='blue', alpha=0.1) +
+  coord_equal() +
+  labs(x='', y='') +
+  theme_bw() 
+`` 
+
+```
+
+## RMarkdown
+
   - Combines plain text of Markdown with R code
-  - Compiling replaces R code with output of R - figures, tables, text
+  - Compiling replaces R code with its output - figures, tables, text
   - Can export to HTML, PDF, Word, presentations (like this one), dashboards
-  - Can produce interactive documents with [htmlwidgets](https://www.htmlwidgets.org/) or [shiny](https://shiny.rstudio.com/) (or both combined)
   - Easy to share as a stand-alone HTML file
-  - Results can use RSG branding (`CSS` is helpful)
-  - Show [example](https://github.com/landisrm/rTED_2020/blob/main/01_rmarkdown_static.Rmd
+  - Results can use RSG branding (custom CSS, Word templates)
+  - Can produce interactive documents with [htmlwidgets](https://www.htmlwidgets.org/) or [shiny](https://shiny.rstudio.com/) (or both combined)
+
+Show [example](https://github.com/landisrm/rTED_2020/blob/main/01_rmarkdown_static.Rmd)
 
 # Interactive Documents
 
 ## htmlwidgets
 
-- [htmlwidgets](http://www.htmlwidgets.org/index.html): packages that wrap JavaScript libraries and make them accessible in R
+- [htmlwidgets](http://www.htmlwidgets.org/index.html): a "framework that bridges R and JavaScript".  R packages that make JavaScript libraries accessible in R.
 - [DT](https://rstudio.github.io/DT/) ([DataTables](https://datatables.net/))
 - [leaflet](https://rstudio.github.io/leaflet/) ([Leaflet](https://leafletjs.com/))
-- Show [example](file:///C:/Users/matt.landis/OneDrive%20-%20Resource%20Systems%20Group,%20Inc/Git/rTED_2020/02_rmarkdown_interactive.html)
 - File is shareable as a single `.html` file.
+- Show [example](file:///C:/Users/matt.landis/OneDrive%20-%20Resource%20Systems%20Group,%20Inc/Git/rTED_2020/02_rmarkdown_interactive.html)
+
 
 ## flexdashboard
 
@@ -142,20 +158,22 @@ I like it because:
   - Much more flexible than RMarkdown alone but harder to set up
   - RStudio has ability to run locally (e.g. htsViewer)
   - Sharing requires a web server
-  - We (RSG) have an account on `shinyapps.io`
+  - Show [example](https://rsginc.shinyapps.io/landis_demo_05_shiny_flex_crosstalk/)
 
 ## shinyapps.io
 
 <p align='center'>
-  <img width='750' src='images/shinyapps.io.png'>
+  <img width='700' src='images/shinyapps.io.png'>
+  https://www.shinyapps.io/admin/#/dashboard
 </p>
+
 
 ## shinyapps.io
 
 - Excellent for sharing Rmarkdown and Shiny web apps
 - Share a link instead of a file
 - Easier to debug and modify than a set of scripts sent to client
-- Custom URLs, e.g. demo.rsginc.com/rted_2020/shiny_test/
+- Custom URLs, e.g. https://demo.rsginc.com/rted_2020/shiny_test/
 - Secure 
   - Can manage access to individuals
   - Can access databases so data isn't stored in web page
