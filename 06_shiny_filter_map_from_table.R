@@ -135,7 +135,7 @@ server <- function(session, input, output) {
       setView(
         lat = map_center['lat'],
         lng = map_center['lon'],
-        zoom = 9
+        zoom = 8
       ) # %>%
     # addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
     
