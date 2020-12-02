@@ -21,5 +21,6 @@ app_file = '06_shiny_filter_map_from_table.R'
 deployApp(
   appFiles = c(support_files, app_file),
   appTitle = paste0('landis_demo_', str_replace(app_file, '[.](Rmd|R)', '')),
+  appPrimaryDoc=app_file,
   forceUpdate=TRUE
 )

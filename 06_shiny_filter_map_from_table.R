@@ -6,6 +6,7 @@
 
 # Global ----------------------------------------------------------------------
 
+require(data.table)
 require(tidyverse)
 require(shiny)
 require(shinydashboard)
@@ -134,7 +135,7 @@ server <- function(session, input, output) {
       setView(
         lat = map_center['lat'],
         lng = map_center['lon'],
-        zoom = 10
+        zoom = 9
       ) # %>%
     # addLegend(pal=pal, values=~income_aggregate, opacity=0.5)
     
