@@ -44,7 +44,7 @@ datatable(hh_table)
 
 ## Interactive maps with leaflet
 
-Making interactive maps is also pretty simple using the [leaflet]() package, which wraps the JavaScript library [Leaflet](https://leafletjs.com/).
+Making interactive maps is also pretty simple using the [leaflet](https://rstudio.github.io/leaflet/) package, which wraps the JavaScript library [Leaflet](https://leafletjs.com/).
 
 This example has been kept as simple as possible to keep the code readable.
 
