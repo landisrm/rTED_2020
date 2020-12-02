@@ -6,13 +6,6 @@ date: "2 Dec 2020"
 
 # Moving pictures: Interactive documents with R and Markdown
 
-## About me
-
-+ Ph.D. from Dartmouth in forest ecology
-+ Joined RSG in 2017 as a Data Scientist
-+ Taught ecology and data visualization at Middlebury College
-+ Worked as a data scientist on environment and international security
-
 ## Goals for this talk
 
 - Share my experience creating a tool for visualizing household travel survey data (htsViewer)
