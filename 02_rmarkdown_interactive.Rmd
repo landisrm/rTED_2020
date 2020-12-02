@@ -2,30 +2,36 @@
 title: "HTS Households (interactive)"
 author: "Matt Landis"
 date: "11/23/2020"
-output: html_document
+output: 
+  html_document:
+    code_folding: show
 editor_options: 
   chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 
 # Set options
 knitr::opts_chunk$set(echo = TRUE, comment = '')
 
 # Load libraries 
 
-library(data.table)
-library(DT)
-library(leaflet)
+suppressPackageStartupMessages({
+  library(shiny)
+  library(data.table)
+  library(DT)
+  library(leaflet)
+})
+
 
 # Load data
 hh_labeled = readRDS('data/tnc_bayarea_hh_labeled.rds')
 hh_map = hh_labeled[
   !income_aggregate %in% c('Prefer not to answer', 'Missing: Non-response', 'Missing: Skip logic') & !is.na(income_aggregate)]
 
-hh_table = hh_labeled[, .(hh_id, num_people, num_vehicles, income_aggregate, res_type)]
-
+hh_table = hh_labeled[, .(hh_id, num_people, income_aggregate, rent_own, res_type)]
 ```
+
 
 ## Interactive tables with DT
 
@@ -50,3 +56,9 @@ leaflet(hh_map) %>%
     lat=~reported_home_lat,
     radius=3)
 ```
+
+## About
+
+This is a demonstration project to show how to interact with household travel survey data.  The project and all source code is available on [Github](https://github.com/landisrm/rTED_2020).
+
+Note: These data have been fully anonymized by randomizing the ids, locations, and descriptive variables.  In addition the actual locations have been jittered.  

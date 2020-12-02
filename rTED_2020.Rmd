@@ -1,5 +1,5 @@
 ---
-title: "RMarkdown: a hub for sharing analysis"
+title: "Moving pictures: Interactive documents with R and Markdown"
 author: "Matt Landis"
 date: "2 Dec 2020"
 
@@ -96,7 +96,11 @@ I like it because:
   - For sharing data externally
 
 
-# interactive graphics
+# interactive documents
+
+## interactive documents
+
+https://bookdown.org/yihui/rmarkdown/interactive-documents.html
 
 ## htmlwidgets
 
@@ -105,6 +109,9 @@ I like it because:
 - DT (DataTables)
 - leaflet (Leaflet)
 - others
+
+## shiny
+
 
 ## flexdashboard
 
@@ -117,11 +124,14 @@ I like it because:
   - Limitations
     - Dataset has to be relatively small
     - Not all graphics are supported (e.g. histograms, lines on maps)
+    - Not many packages can interact with crosstalk
+      - DT
+      - Leaflet
+      - Plotly
+      - d3scatter
+      
 
-## shiny
-
-## TODO:
-Deploy shinyapp https://github.com/RSGInc/tmrtools/wiki/Using-shinyapps.io-to-share-results
+# shiny
 
 shinyapps.io
 - access to database - separate data from the file
@@ -141,3 +151,10 @@ shinyapps.io
   - flexdashboard
   - crosstalk
   - shiny
+
+
+## Links
+
+  - Github
+  - rsginc.shinyapps.io
+  

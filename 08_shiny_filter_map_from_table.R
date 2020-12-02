@@ -64,13 +64,18 @@ ui_header <- dashboardHeader(title = "HTS Households with Shiny")
 ui_body <- dashboardBody(
   
   fluidRow(
+    HTML('<strong>About:</strong> This is a demonstration project to show how to interact with household
+      travel survey data.  The project and source code is available on 
+      <a href="https://github.com/landisrm/rTED_2020">Github</a>.<br>
+      Note: These data have been fully anonymized by randomizing the ids,
+      locations, and descriptive variables.  In addition the actual locations 
+      have been jittered. '),
     box(
       width = 12 * 0.5,
       height=box_height,
       solidHeader = TRUE,
-      leafletOutput("map", height=box_height - 50)
+      leafletOutput("map", height=box_height - 50),
     ),
-    
     box(
       width = 12 * 0.5,
       height=box_height,
@@ -96,7 +101,6 @@ server <- function(session, input, output) {
   data_r = reactive({
     hh_map[income_aggregate %in% input$income]
   })
-  
   
   output$tbl <- renderDT({
     

@@ -4,7 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     source_code: embed
-runtime: shiny_prerendered
+runtime: shiny
 ---
 
 ```{r global, context='data', include=FALSE}
@@ -35,6 +35,14 @@ pal = colorFactor(
 
 Column {.sidebar}
 -----------------------------------------------------------------------
+
+### About:
+
+This is a demonstration project to show how to interact with household travel survey data.  The project and all source code is available on [Github](https://github.com/landisrm/rTED_2020).
+
+Note: These data have been fully anonymized by randomizing the ids, locations, and descriptive variables.  In addition the actual locations have been jittered.  
+
+*** 
 
 Select income range(s) of interest
 

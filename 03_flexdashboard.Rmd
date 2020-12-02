@@ -24,7 +24,7 @@ hh_labeled = readRDS('data/tnc_bayarea_hh_labeled.rds')
 hh_map = hh_labeled[
   !income_aggregate %in% c('Prefer not to answer', 'Missing: Non-response', 'Missing: Skip logic') & !is.na(income_aggregate)]
 
-hh_table = hh_labeled[, .(hh_id, num_people, num_vehicles, income_aggregate, res_type)]
+hh_table = hh_labeled[, .(hh_id, num_people, income_aggregate, rent_own, res_type)]
 
 # Define map palette  -------------------------------------------------------
 
@@ -36,6 +36,17 @@ pal = colorFactor(
   levels=income_levels)
 
 ```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+### About:
+
+This is a demonstration project to show how to interact with household travel survey data.  The project and all source code is available on [Github](https://github.com/landisrm/rTED_2020).
+
+Note: These data have been fully anonymized by randomizing the ids, locations, and descriptive variables.  In addition the actual locations have been jittered.  
+
+*** 
 
 
 Column {data-width=500}
