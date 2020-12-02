@@ -2,23 +2,9 @@
 title: "Moving pictures: Interactive documents with R and Markdown"
 author: "Matt Landis"
 date: "2 Dec 2020"
-
-output: 
-  ioslides_presentation:
-    incremental: false
-    widescreen: true
-    highlight: pygments
-    footer: "rTed 2 Dec 2020"
-    keep_md: false
-    logo: images/RSG Mark (cmyk).jpg
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment='')
-knitr::knit_engines$set('markdown')
-
-```
-
+# Moving pictures: Interactive documents with R and Markdown
 
 ## About me
 

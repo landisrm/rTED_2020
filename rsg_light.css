@@ -22,7 +22,7 @@ slides > slide {
   -moz-transition: all 0.6s ease-in-out;
   -o-transition: all 0.6s ease-in-out;
   transition: all 0.6s ease-in-out;
-  background-image: url('images/rsg_background_dark.png');
+  background-image: url('images/rsg_background_light.png');
   background-size: 100%;
   background-repeat: no-repeat;
 /*
