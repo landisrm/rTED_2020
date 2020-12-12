@@ -1,8 +1,3 @@
----
-title: "Moving pictures: Interactive documents with R and Markdown"
-author: "Matt Landis"
-date: "2 Dec 2020"
----
 
 # Moving pictures: Interactive documents with R and Markdown
 
